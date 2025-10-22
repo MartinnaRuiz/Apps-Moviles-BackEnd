@@ -7,8 +7,10 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 // Cada quien cambia su IP local aquí
-const LOCAL_IP = '192.168.0.187';
+const LOCAL_IP = '192.168.1.33';
 //caro: 192.168.0.121
+//martu: 192.168.1.33
+//maru: 192.168.0.187
 app.use(cors());
 app.use(express.json());
 
