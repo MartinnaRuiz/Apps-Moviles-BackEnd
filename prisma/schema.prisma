@@ -6,14 +6,27 @@ datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
 }
+
 model User {
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
+  password       String
+  username       String        @unique
+  name           String?
+  profileImageId Int?
+  profileImage   ProfileImage? @relation(fields: [profileImageId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  reviews        Review[]
+}
+
+model ProfileImage {
   id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  username  String   @unique
-  name      String?
+  url       String   @unique
+  label     String?
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  users     User[]
 }
 
 model Movie {
@@ -25,4 +38,18 @@ model Movie {
   releaseDate DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  reviews     Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  movieId   Int
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  movie     Movie    @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId], name: "userId_movieId")
 }

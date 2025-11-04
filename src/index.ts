@@ -1,22 +1,30 @@
 import cors from 'cors';
+import path from 'path';
 import express from 'express';
 import { prisma } from './lib/prisma';
+import reviewRouter from './routes/review.routes';
 import authRouter from './routes/auth.routes';
+import avatarRouter from './routes/avatar.routes'; 
 import 'dotenv/config';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const LOCAL_IP = '192.168.0.187';
+const LOCAL_IP = '192.168.1.40';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// Archivos estáticos (sirve /uploads/avatars/..)
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// Rutas API
 app.use('/api/auth', authRouter);
+app.use('/api/reviews', reviewRouter);
+app.use('/api/avatars', avatarRouter); 
 
 // Ruta de prueba
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({ message: 'API is working!' });
 });
 
@@ -35,15 +43,15 @@ const fetchFromTMDB = async (endpoint: string) => {
 };
 
 // 🎬 Películas populares
-app.get('/api/movies/popular', async (req, res) => {
+app.get('/api/movies/popular', async (_req, res) => {
   try {
     const data = await fetchFromTMDB('/movie/popular');
     res.json(data);
   } catch (error) {
     console.error('Error fetching popular movies:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener películas populares',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -52,14 +60,13 @@ app.get('/api/movies/popular', async (req, res) => {
 app.get('/api/movies/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching details for movie ${id}`);
     const data = await fetchFromTMDB(`/movie/${id}`);
     res.json(data);
   } catch (error) {
     console.error('Error fetching movie details:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener detalles de la película',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -68,14 +75,13 @@ app.get('/api/movies/:id', async (req, res) => {
 app.get('/api/movies/:id/credits', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching credits for movie ${id}`);
     const data = await fetchFromTMDB(`/movie/${id}/credits`);
     res.json(data);
   } catch (error) {
     console.error('Error fetching movie credits:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener el elenco',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -84,14 +90,13 @@ app.get('/api/movies/:id/credits', async (req, res) => {
 app.get('/api/movies/:id/similar', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching similar movies for ${id}`);
     const data = await fetchFromTMDB(`/movie/${id}/similar`);
     res.json(data);
   } catch (error) {
     console.error('Error fetching similar movies:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener películas similares',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -100,14 +105,13 @@ app.get('/api/movies/:id/similar', async (req, res) => {
 app.get('/api/movies/:id/watch/providers', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching watch providers for movie ${id}`);
     const data = await fetchFromTMDB(`/movie/${id}/watch/providers`);
     res.json(data);
   } catch (error) {
     console.error('Error fetching watch providers:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener proveedores de streaming',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -116,14 +120,13 @@ app.get('/api/movies/:id/watch/providers', async (req, res) => {
 app.get('/api/movies/:id/videos', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Fetching videos for movie ${id}`);
     const data = await fetchFromTMDB(`/movie/${id}/videos`);
     res.json(data);
   } catch (error) {
     console.error('Error fetching videos:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al obtener videos',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -132,31 +135,19 @@ app.get('/api/movies/:id/videos', async (req, res) => {
 app.get('/api/search', async (req, res) => {
   try {
     const { query, page = '1' } = req.query;
-    
-    if (!query) {
-      return res.status(400).json({ error: 'Query parameter requerido' });
-    }
+    if (!query) return res.status(400).json({ error: 'Query parameter requerido' });
 
-    console.log(`Searching for: ${query} (page ${page})`);
-    
     const apiKey = process.env.TMDB_API_KEY;
-    if (!apiKey) {
-      throw new Error('TMDB_API_KEY no configurada');
-    }
+    if (!apiKey) throw new Error('TMDB_API_KEY no configurada');
 
-    // Buscar en TMDB con paginación
-    const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-ES&query=${encodeURIComponent(String(query))}&page=${page}`;
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=es-ES&query=${encodeURIComponent(
+      String(query),
+    )}&page=${page}`;
+
     const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`TMDB API error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`TMDB API error: ${response.status}`);
 
     const data = await response.json();
-    
-    console.log(`✅ Found ${data.results?.length || 0} movies on page ${page}`);
-    
-    // Retornamos los resultados con info de paginación
     res.json({
       results: data.results || [],
       total_results: data.total_results,
@@ -165,9 +156,9 @@ app.get('/api/search', async (req, res) => {
     });
   } catch (error) {
     console.error('Error searching movies:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error al buscar películas',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -188,6 +179,7 @@ async function main() {
       console.log(`   - GET /api/movies/:id/watch/providers`);
       console.log(`   - GET /api/movies/:id/videos`);
       console.log(`   - GET /api/search?query=...`);
+      console.log(`   - GET /api/avatars`); 
     });
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);
