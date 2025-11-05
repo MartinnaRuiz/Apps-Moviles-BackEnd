@@ -4,12 +4,13 @@ import express from 'express';
 import { prisma } from './lib/prisma';
 import reviewRouter from './routes/review.routes';
 import authRouter from './routes/auth.routes';
-import avatarRouter from './routes/avatar.routes'; 
+import avatarRouter from './routes/avatar.routes';
+import favoritesRouter from './routes/favorites.routes';
 import 'dotenv/config';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const LOCAL_IP = '192.168.1.40';
+const LOCAL_IP = '192.168.0.121';
 
 // Middleware
 app.use(cors());
@@ -21,7 +22,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // Rutas API
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewRouter);
-app.use('/api/avatars', avatarRouter); 
+app.use('/api/avatars', avatarRouter);
+app.use('/api/favorites', favoritesRouter);
 
 // Ruta de prueba
 app.get('/', (_req, res) => {
@@ -179,7 +181,10 @@ async function main() {
       console.log(`   - GET /api/movies/:id/watch/providers`);
       console.log(`   - GET /api/movies/:id/videos`);
       console.log(`   - GET /api/search?query=...`);
-      console.log(`   - GET /api/avatars`); 
+      console.log(`   - GET /api/avatars`);
+      console.log(`   - GET /api/favorites`);
+      console.log(`   - POST /api/favorites`);
+      console.log(`   - DELETE /api/favorites/:movieId`);
     });
   } catch (error) {
     console.error('❌ Unable to connect to the database:', error);

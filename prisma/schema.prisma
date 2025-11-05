@@ -18,6 +18,7 @@ model User {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   reviews        Review[]
+  favorites      Favorite[]
 }
 
 model ProfileImage {
@@ -38,18 +39,30 @@ model Movie {
   releaseDate DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  reviews     Review[]
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
   userId    Int
-  movieId   Int
+  movieId   String
   rating    Int
   comment   String
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  movie     Movie    @relation(fields: [movieId], references: [id])
 
   @@unique([userId, movieId], name: "userId_movieId")
+}
+
+model Favorite {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  movieId     String
+  title       String
+  posterPath  String?
+  releaseDate DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId], name: "userId_movieId")
+  @@index([userId])
 }
