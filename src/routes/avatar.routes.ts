@@ -3,7 +3,6 @@ import { prisma } from '../lib/prisma';
 
 const router = Router();
 
-// GET /api/avatars  → lista de avatares activos
 router.get('/', async (_req, res) => {
   const items = await prisma.profileImage.findMany({
     where: { isActive: true },
@@ -29,7 +28,7 @@ router.post('/seed', async (_req, res) => {
   }
   res.json({ ok: true, count: files.length });
 });
-// GET /api/avatars  → lista de avatares activos
+
 router.get('/', async (_req, res) => {
   const items = await prisma.profileImage.findMany({
     where: { isActive: true },

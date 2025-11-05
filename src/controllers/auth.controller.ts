@@ -13,9 +13,6 @@ interface AuthRequestBody {
   name?: string;
 }
 
-/**
- * POST /api/auth/register
- */
 export const register = async (req: Request<{}, {}, AuthRequestBody>, res: Response) => {
   try {
     const { email, password, username, name } = req.body;
@@ -49,7 +46,7 @@ export const register = async (req: Request<{}, {}, AuthRequestBody>, res: Respo
         username: user.username,
         name: user.name,
         profileImageId: user.profileImageId ?? null,
-        profileImage: user.profileImage ?? null, // { id, url } | null
+        profileImage: user.profileImage ?? null,
       },
     });
   } catch (error: any) {
@@ -58,9 +55,6 @@ export const register = async (req: Request<{}, {}, AuthRequestBody>, res: Respo
   }
 };
 
-/**
- * POST /api/auth/login
- */
 export const login = async (req: Request<{}, {}, AuthRequestBody>, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -98,9 +92,6 @@ export const login = async (req: Request<{}, {}, AuthRequestBody>, res: Response
   }
 };
 
-/**
- * POST /api/auth/seed  (usuario de prueba)
- */
 export const seedPrueba = async (_req: Request, res: Response) => {
   try {
     const email = 'prueba';
@@ -130,11 +121,6 @@ export const seedPrueba = async (_req: Request, res: Response) => {
   }
 };
 
-/**
- * PUT /api/auth/me  (actualiza nombre y/o profileImageId)
- * Body: { name?: string, profileImageId?: number }
- * Requiere authRequired.
- */
 export const updateMe = async (req: AuthedRequest, res: Response) => {
   try {
     const { name, profileImageId } = (req.body ?? {}) as {
@@ -168,9 +154,6 @@ export const updateMe = async (req: AuthedRequest, res: Response) => {
   }
 };
 
-/**
- * GET /api/auth/health
- */
 export const health = (_req: Request, res: Response) => {
   res.json({ ok: true, time: new Date().toISOString() });
 };

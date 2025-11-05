@@ -12,25 +12,20 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const LOCAL_IP = '192.168.0.121';
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Archivos estáticos (sirve /uploads/avatars/..)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-// Rutas API
 app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/avatars', avatarRouter);
 app.use('/api/favorites', favoritesRouter);
 
-// Ruta de prueba
 app.get('/', (_req, res) => {
   res.json({ message: 'API is working!' });
 });
 
-// 🎬 Función auxiliar para hacer fetch a TMDB
 const fetchFromTMDB = async (endpoint: string) => {
   const apiKey = process.env.TMDB_API_KEY;
   if (!apiKey) {
@@ -44,7 +39,6 @@ const fetchFromTMDB = async (endpoint: string) => {
   return response.json();
 };
 
-// 🎬 Películas populares
 app.get('/api/movies/popular', async (_req, res) => {
   try {
     const data = await fetchFromTMDB('/movie/popular');
@@ -58,7 +52,6 @@ app.get('/api/movies/popular', async (_req, res) => {
   }
 });
 
-// 🎬 Detalles de una película
 app.get('/api/movies/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,7 +66,6 @@ app.get('/api/movies/:id', async (req, res) => {
   }
 });
 
-// 🎬 Elenco de una película
 app.get('/api/movies/:id/credits', async (req, res) => {
   try {
     const { id } = req.params;
@@ -88,7 +80,6 @@ app.get('/api/movies/:id/credits', async (req, res) => {
   }
 });
 
-// 🎬 Películas similares
 app.get('/api/movies/:id/similar', async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,7 +94,6 @@ app.get('/api/movies/:id/similar', async (req, res) => {
   }
 });
 
-// 🎬 Proveedores de streaming (Dónde ver)
 app.get('/api/movies/:id/watch/providers', async (req, res) => {
   try {
     const { id } = req.params;
@@ -118,7 +108,6 @@ app.get('/api/movies/:id/watch/providers', async (req, res) => {
   }
 });
 
-// 🎬 Videos (Trailers)
 app.get('/api/movies/:id/videos', async (req, res) => {
   try {
     const { id } = req.params;
@@ -133,7 +122,6 @@ app.get('/api/movies/:id/videos', async (req, res) => {
   }
 });
 
-// 🔍 Búsqueda de películas (con paginación)
 app.get('/api/search', async (req, res) => {
   try {
     const { query, page = '1' } = req.query;

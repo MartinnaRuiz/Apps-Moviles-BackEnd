@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 
-// Extender Request para incluir userId del middleware de autenticación
 interface AuthRequest extends Request {
   userId?: number;
 }
 
-// GET /api/favorites - Obtener todos los favoritos del usuario
 export const getFavorites = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
@@ -27,7 +25,6 @@ export const getFavorites = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// POST /api/favorites - Agregar película a favoritos
 export const addFavorite = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
@@ -41,7 +38,6 @@ export const addFavorite = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'movieId y title son requeridos' });
     }
 
-    // Verificar si ya existe en favoritos
     const existingFavorite = await prisma.favorite.findUnique({
       where: {
         userId_movieId: {
@@ -55,7 +51,6 @@ export const addFavorite = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Ya está en favoritos' });
     }
 
-    // Crear nuevo favorito
     const favorite = await prisma.favorite.create({
       data: {
         userId,
@@ -73,7 +68,6 @@ export const addFavorite = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// DELETE /api/favorites/:movieId - Eliminar película de favoritos
 export const removeFavorite = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.userId;
@@ -83,7 +77,6 @@ export const removeFavorite = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: 'No autorizado' });
     }
 
-    // Eliminar favorito
     await prisma.favorite.delete({
       where: {
         userId_movieId: {

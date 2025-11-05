@@ -1,0 +1,15 @@
+✅ Database connected successfully
+🚀 Server is running on port 3000
+📱 Access from mobile: http://192.168.0.121:3000
+🎬 Available endpoints:
+   - GET /api/movies/popular
+   - GET /api/movies/:id
+   - GET /api/movies/:id/credits
+   - GET /api/movies/:id/similar
+   - GET /api/movies/:id/watch/providers
+   - GET /api/movies/:id/videos
+   - GET /api/search?query=...
+   - GET /api/avatars
+   - GET /api/favorites
+   - POST /api/favorites
+   - DELETE /api/favorites/:movieId

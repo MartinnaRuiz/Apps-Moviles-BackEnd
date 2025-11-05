@@ -4,6 +4,7 @@ import { authRequired, AuthedRequest } from '../middlewares/authRequired';
 
 const router = Router();
 
+// Crear/actualizar reseña
 router.post('/', authRequired, async (req: AuthedRequest, res) => {
   try {
     const movieId = String(req.body.movieId);
@@ -27,6 +28,7 @@ router.post('/', authRequired, async (req: AuthedRequest, res) => {
   }
 });
 
+// Listar reseñas por película
 router.get('/', async (req, res) => {
   const movieId = String(req.query.movieId);
   const userId = req.query.userId ? Number(req.query.userId) : null;
@@ -50,6 +52,7 @@ router.get('/', async (req, res) => {
   res.json({ reviews });
 });
 
+// Obtener reviews del usuario autenticado
 router.get('/my-reviews', authRequired, async (req: AuthedRequest, res) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -65,52 +68,3 @@ router.get('/my-reviews', authRequired, async (req: AuthedRequest, res) => {
 });
 
 export default router;
-
-router.get('/recent', async (req, res) => {
-  try {
-    const reviews = await prisma.review.findMany({
-      take: 10,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImage: {
-              select: { url: true }
-            }
-          }
-        }
-      }
-    });
-
-    const reviewsWithMovies = await Promise.all(
-      reviews.map(async (review) => {
-        try {
-          const movieRes = await fetch(
-            `https://api.themoviedb.org/3/movie/${review.movieId}?api_key=${process.env.TMDB_API_KEY}&language=es-ES`
-          );
-          if (movieRes.ok) {
-            const movie = await movieRes.json();
-            return {
-              ...review,
-              movie: {
-                title: movie.title,
-                poster_path: movie.poster_path
-              }
-            };
-          }
-        } catch (error) {
-          console.error(`Error fetching movie ${review.movieId}:`, error);
-        }
-        return review;
-      })
-    );
-
-    res.json({ reviews: reviewsWithMovies });
-  } catch (error) {
-    console.error('Error fetching recent reviews:', error);
-    res.status(500).json({ error: 'Failed to fetch recent reviews' });
-  }
-});
