@@ -52,6 +52,68 @@ app.get('/api/movies/popular', async (_req, res) => {
   }
 });
 
+app.get('/api/movies/upcoming', async (_req, res) => {
+  try {
+    const data = await fetchFromTMDB('/movie/upcoming');
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching upcoming movies:', error);
+    res.status(500).json({
+      error: 'Error al obtener próximos estrenos',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+app.get('/api/movies/toprated', async (_req, res) => {
+  try {
+    const data = await fetchFromTMDB('/movie/top_rated');
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching top rated movies:', error);
+    res.status(500).json({
+      error: 'Error al obtener películas mejor valoradas',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+app.get('/api/movies/genre/comedy', async (_req, res) => {
+  try {
+    const apiKey = process.env.TMDB_API_KEY;
+    if (!apiKey) throw new Error('TMDB_API_KEY no configurada');
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=es-ES&with_genres=35&sort_by=popularity.desc`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`TMDB API error: ${response.status}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching comedy movies:', error);
+    res.status(500).json({
+      error: 'Error al obtener comedias',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+app.get('/api/movies/genre/drama', async (_req, res) => {
+  try {
+    const apiKey = process.env.TMDB_API_KEY;
+    if (!apiKey) throw new Error('TMDB_API_KEY no configurada');
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&language=es-ES&with_genres=18&sort_by=popularity.desc`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`TMDB API error: ${response.status}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching drama movies:', error);
+    res.status(500).json({
+      error: 'Error al obtener dramas',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 app.get('/api/movies/:id', async (req, res) => {
   try {
     const { id } = req.params;
