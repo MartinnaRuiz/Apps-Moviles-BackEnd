@@ -6,6 +6,7 @@ import reviewRouter from './routes/review.routes';
 import authRouter from './routes/auth.routes';
 import avatarRouter from './routes/avatar.routes';
 import favoritesRouter from './routes/favorites.routes';
+import listsRouter from './routes/lists.routes';
 import 'dotenv/config';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/avatars', avatarRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/api/lists', listsRouter);
 
 app.get('/', (_req, res) => {
   res.json({ message: 'API is working!' });
