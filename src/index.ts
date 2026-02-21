@@ -215,6 +215,26 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
+app.get('/api/users/:id', async (req, res) => {
+  try {
+    const {id}=req.params;
+    const user=await prisma.user.findUnique({
+      where:{id:Number(id)},
+      select:{
+        id:true,
+        name:true,
+        username:true,
+        profileImage:true,
+        _count:{select:{reviews:true,favorites:true}},
+      },
+    });
+    if(!user) return res.status(404).json({error:'Usuario no encontrado'});
+    res.json(user);
+  } catch(error){
+    res.status(500).json({error:'Error al obtener usuario'});
+  }
+});
+
 async function main() {
   try {
     await prisma.$connect();
