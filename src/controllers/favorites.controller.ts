@@ -7,14 +7,26 @@ interface AuthRequest extends Request {
 
 export const getFavorites = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.userId;
+    const queryUserId = req.query.userId;
 
-    if (!userId) {
-      return res.status(401).json({ message: 'No autorizado' });
+    let targetUserId: number | undefined;
+
+    if (queryUserId !== undefined) {
+      const parsed = Number(queryUserId);
+      if (Number.isNaN(parsed)) {
+        return res.status(400).json({ message: 'userId inválido' });
+      }
+      targetUserId = parsed;
+    } else if (req.userId) {
+      targetUserId = req.userId;
+    }
+
+    if (!targetUserId) {
+      return res.status(400).json({ message: 'userId requerido' });
     }
 
     const favorites = await prisma.favorite.findMany({
-      where: { userId },
+      where: { userId: targetUserId },
       orderBy: { createdAt: 'desc' },
     });
 

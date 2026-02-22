@@ -14,7 +14,9 @@ const favorites_routes_1 = __importDefault(require("./routes/favorites.routes"))
 require("dotenv/config");
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 3000;
-const LOCAL_IP = '192.168.0.121';
+
+import { LOCAL_IP } from './config';
+
 // Middleware
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());

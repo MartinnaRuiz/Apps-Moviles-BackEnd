@@ -28,7 +28,7 @@ router.post('/', authRequired, async (req: AuthedRequest, res) => {
 });
 
 router.get('/', async (req, res) => {
-  const movieId = String(req.query.movieId);
+  const movieId = req.query.movieId ? String(req.query.movieId) : null;
   const userId = req.query.userId ? Number(req.query.userId) : null;
 
   if (!movieId && !userId) {
@@ -64,7 +64,6 @@ router.get('/my-reviews', authRequired, async (req: AuthedRequest, res) => {
   }
 });
 
-export default router;
 
 router.get('/recent', async (req, res) => {
   try {
@@ -114,3 +113,33 @@ router.get('/recent', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch recent reviews' });
   }
 });
+router.delete('/:id', authRequired, async (req: AuthedRequest, res) => {
+  try {
+    const reviewId = Number(req.params.id);
+    
+    // Obtener la reseña
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId }
+    });
+    
+    if (!review) {
+      return res.status(404).json({ message: 'Reseña no encontrada' });
+    }
+    
+    // Verificar que el usuario sea el dueño
+    if (review.userId !== req.userId) {
+      return res.status(403).json({ message: 'No tienes permiso para eliminar esta reseña' });
+    }
+    
+    // Eliminar
+    await prisma.review.delete({
+      where: { id: reviewId }
+    });
+    
+    res.json({ message: 'Reseña eliminada' });
+  } catch (e) {
+    console.error('DELETE /reviews/:id error', e);
+    res.status(500).json({ message: 'Error al eliminar la reseña' });
+  }
+});
+export default router;

@@ -11,7 +11,8 @@ import 'dotenv/config';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-const LOCAL_IP = '192.168.0.121';
+
+import { LOCAL_IP } from './config';
 
 app.use(cors());
 app.use(express.json());

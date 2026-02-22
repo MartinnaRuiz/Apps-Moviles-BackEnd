@@ -4,12 +4,10 @@ import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.use(authenticateToken);
-
 router.get('/', favoritesController.getFavorites);
 
-router.post('/', favoritesController.addFavorite);
+router.post('/', authenticateToken, favoritesController.addFavorite);
 
-router.delete('/:movieId', favoritesController.removeFavorite);
+router.delete('/:movieId', authenticateToken, favoritesController.removeFavorite);
 
 export default router;
