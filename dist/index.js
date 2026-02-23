@@ -31,7 +31,6 @@ app.use('/api/favorites', favorites_routes_1.default);
 app.get('/', (_req, res) => {
     res.json({ message: 'API is working!' });
 });
-// 🎬 Función auxiliar para hacer fetch a TMDB
 const fetchFromTMDB = async (endpoint) => {
     const apiKey = process.env.TMDB_API_KEY;
     if (!apiKey) {
@@ -44,7 +43,6 @@ const fetchFromTMDB = async (endpoint) => {
     }
     return response.json();
 };
-// 🎬 Películas populares
 app.get('/api/movies/popular', async (_req, res) => {
     try {
         const data = await fetchFromTMDB('/movie/popular');
@@ -58,7 +56,6 @@ app.get('/api/movies/popular', async (_req, res) => {
         });
     }
 });
-// 🎬 Detalles de una película
 app.get('/api/movies/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -73,7 +70,6 @@ app.get('/api/movies/:id', async (req, res) => {
         });
     }
 });
-// 🎬 Elenco de una película
 app.get('/api/movies/:id/credits', async (req, res) => {
     try {
         const { id } = req.params;
@@ -88,7 +84,6 @@ app.get('/api/movies/:id/credits', async (req, res) => {
         });
     }
 });
-// 🎬 Películas similares
 app.get('/api/movies/:id/similar', async (req, res) => {
     try {
         const { id } = req.params;
@@ -103,7 +98,6 @@ app.get('/api/movies/:id/similar', async (req, res) => {
         });
     }
 });
-// 🎬 Proveedores de streaming (Dónde ver)
 app.get('/api/movies/:id/watch/providers', async (req, res) => {
     try {
         const { id } = req.params;
@@ -118,7 +112,6 @@ app.get('/api/movies/:id/watch/providers', async (req, res) => {
         });
     }
 });
-// 🎬 Videos (Trailers)
 app.get('/api/movies/:id/videos', async (req, res) => {
     try {
         const { id } = req.params;
@@ -133,7 +126,6 @@ app.get('/api/movies/:id/videos', async (req, res) => {
         });
     }
 });
-// 🔍 Búsqueda de películas (con paginación)
 app.get('/api/search', async (req, res) => {
     try {
         const { query, page = '1' } = req.query;
@@ -167,9 +159,9 @@ async function main() {
         await prisma_1.prisma.$connect();
         console.log('✅ Database connected successfully');
         app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 Server is running on port ${PORT}`);
-            console.log(`📱 Access from mobile: http://${LOCAL_IP}:${PORT}`);
-            console.log(`🎬 Available endpoints:`);
+            console.log(` Server is running on port ${PORT}`);
+            console.log(` Access from mobile: http://${LOCAL_IP}:${PORT}`);
+            console.log(` Available endpoints:`);
             console.log(`   - GET /api/movies/popular`);
             console.log(`   - GET /api/movies/:id`);
             console.log(`   - GET /api/movies/:id/credits`);

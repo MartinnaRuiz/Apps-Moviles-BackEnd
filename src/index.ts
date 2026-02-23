@@ -244,9 +244,9 @@ async function main() {
     console.log('✅ Database connected successfully');
 
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`📱 Access from mobile: http://${LOCAL_IP}:${PORT}`);
-      console.log(`🎬 Available endpoints:`);
+      console.log(` Server is running on port ${PORT}`);
+      console.log(` Access from mobile: http://${LOCAL_IP}:${PORT}`);
+      console.log(` Available endpoints:`);
       console.log(`   - GET /api/movies/popular`);
       console.log(`   - GET /api/movies/:id`);
       console.log(`   - GET /api/movies/:id/credits`);
